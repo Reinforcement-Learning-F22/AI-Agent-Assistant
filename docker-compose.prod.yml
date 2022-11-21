@@ -1,0 +1,24 @@
+version: '3.3'
+
+services:
+    bot:
+        build:
+            context: Aiogram-bot
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        container_name: ${BOT_NAME}
+        links:
+            - mongodb
+
+    mongodb:
+        image: mongo:latest
+        restart: unless-stopped
+        ports:
+            - "27017:27017"
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+            MONGODB_DATA_DIR: /data/db
+            MONGODB_LOG_DIR: /dev/null
+        volumes:
+            - ./mongodb/data:/data/db

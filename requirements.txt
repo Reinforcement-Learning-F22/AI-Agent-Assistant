@@ -1,0 +1,4 @@
+motor~=2.5.1
+aiogram~=2.20
+environs~=9.5.0
+pydantic~=1.9.0
