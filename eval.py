@@ -1,10 +1,10 @@
-from typing import Dict, Any
-from neural_chat.eval import *
+import argparse
+import json
+import random
+from typing import Any, Dict
 
 import neural_chat.craigslist as cg
-import argparse
-import random
-import json
+from neural_chat.eval import *
 
 
 def rollout_2(buyer: Model, seller: Model, data: cg.Craigslist, debug: bool = False,

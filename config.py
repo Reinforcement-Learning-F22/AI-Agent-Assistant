@@ -8,6 +8,8 @@ class Bot(BaseModel):
     """
     token: str
     admins: list
+    name: str
+    storage_adapter: str
 
 
 class Database(BaseModel):
@@ -37,6 +39,15 @@ def load_config(path: str = None):
         bot=Bot(
             token=env.str("BOT_TOKEN"),
             admins=env.list("ADMINS"),
+            name=env.str("BOT_NAME"),
+            storage_adapter=env.str("STORAGE_ADAPTER"),
+            logic_adapters=[
+                {
+                    'import_path': env.str("LOGIC_ADAPTER"),
+                    'default_response': 'I am sorry, but I do not understand.',
+                    'maximum_similarity_threshold': 0.90
+                },
+            ],
         ),
         db=Database(
             host=env.str("DB_HOST"),
