@@ -1,13 +1,12 @@
 # coding=utf-8
 
-from __future__ import print_function
 import pickle
 import codecs
 import re
 import os
-import time
 import numpy as np
 import config
+
 
 def preProBuildWordVocab(word_count_threshold=5, all_words_path=config.all_words_path):
     # borrowed this function from NeuralTalk
@@ -33,7 +32,7 @@ def preProBuildWordVocab(word_count_threshold=5, all_words_path=config.all_words
     for sent in captions:
         nsents += 1
         for w in sent.lower().split(' '):
-           word_counts[w] = word_counts.get(w, 0) + 1
+            word_counts[w] = word_counts.get(w, 0) + 1
     vocab = [w for w in word_counts if word_counts[w] >= word_count_threshold]
     print('filtered words from %d to %d' % (len(word_counts), len(vocab)))
 
@@ -50,8 +49,8 @@ def preProBuildWordVocab(word_count_threshold=5, all_words_path=config.all_words
     wordtoix['<unk>'] = 3
 
     for idx, w in enumerate(vocab):
-        wordtoix[w] = idx+4
-        ixtoword[idx+4] = w
+        wordtoix[w] = idx + 4
+        ixtoword[idx + 4] = w
 
     word_counts['<pad>'] = nsents
     word_counts['<bos>'] = nsents
@@ -59,11 +58,12 @@ def preProBuildWordVocab(word_count_threshold=5, all_words_path=config.all_words
     word_counts['<unk>'] = nsents
 
     bias_init_vector = np.array([1.0 * word_counts[ixtoword[i]] for i in ixtoword])
-    bias_init_vector /= np.sum(bias_init_vector) # normalize to frequencies
+    bias_init_vector /= np.sum(bias_init_vector)  # normalize to frequencies
     bias_init_vector = np.log(bias_init_vector)
-    bias_init_vector -= np.max(bias_init_vector) # shift to nice numeric range
+    bias_init_vector -= np.max(bias_init_vector)  # shift to nice numeric range
 
     return wordtoix, ixtoword, bias_init_vector
+
 
 def parse_all_words(all_words_path):
     raw_movie_lines = open('data/movie_lines.txt', 'r', encoding='utf-8', errors='ignore').read().split('\n')[:-1]
@@ -74,7 +74,10 @@ def parse_all_words(all_words_path):
             utterance = line[-1]
             f.write(utterance + '\n')
 
+
 """ Extract only the vocabulary part of the data """
+
+
 def refine(data):
     words = re.findall("[a-zA-Z'-]+", data)
     words = ["".join(word.split("'")) for word in words]
@@ -82,11 +85,12 @@ def refine(data):
     data = ' '.join(words)
     return data
 
+
 if __name__ == '__main__':
     parse_all_words(config.all_words_path)
 
     raw_movie_lines = open('data/movie_lines.txt', 'r', encoding='utf-8', errors='ignore').read().split('\n')[:-1]
-    
+
     utterance_dict = {}
     with codecs.open('data/tokenized_all_words.txt', "w", encoding='utf-8', errors='ignore') as f:
         for line in raw_movie_lines:

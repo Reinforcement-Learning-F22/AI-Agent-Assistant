@@ -66,7 +66,10 @@ The question is sent to the admins, and when they receive the answer, they add i
 
 ![](assets/last_part.png)
 
-you can find more results from chatbot in <a href='result' target="_blank">this directory</a>
+you can find more results from chatbot in <a href='result' target="_blank">this directory</a> neural networks' configs
+of those results are described in the filename
 
-neural networks' configs of those results are described in the filename
+# Authors
 
+* [@YoshlikMedia](https://github.com/yoshlikmedia)
+* [@ParthKalkar](https://github.com/Odilbek99) 
