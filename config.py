@@ -10,6 +10,7 @@ class Bot(BaseModel):
     admins: list
     name: str
     storage_adapter: str
+    logic_adapters: list
 
 
 class Database(BaseModel):

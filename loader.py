@@ -10,5 +10,8 @@ bot = Bot(token=config.bot.token, parse_mode=types.ParseMode.HTML)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 db = MongoDB()
-bot = ChatBot(name=config.bot.name, storage_adapter=config.bot.storage_adapter,
-              logic_adapters=config.bot.logic_adapters)
+chatbot = ChatBot(
+    name=config.bot.name,
+    storage_adapter=config.bot.storage_adapter,
+    logic_adapters=config.bot.logic_adapters
+)
