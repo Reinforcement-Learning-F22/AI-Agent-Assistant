@@ -1,5 +1,4 @@
 from aiogram import types
-from chatterbot.conversation import Statement
 from chatterbot.trainers import ListTrainer
 
 from loader import dp, chatbot
