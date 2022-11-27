@@ -7,7 +7,7 @@ import time
 import sys
 import copy
 
-sys.path.append("python")
+sys.path.append("agent")
 from model import Seq2Seq_chatbot
 from data_reader import Data_Reader
 import data_parser

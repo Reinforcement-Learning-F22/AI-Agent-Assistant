@@ -7,7 +7,7 @@ import os
 import time
 import sys
 
-sys.path.append("python")
+sys.path.append("agent")
 import data_parser
 import config
 
