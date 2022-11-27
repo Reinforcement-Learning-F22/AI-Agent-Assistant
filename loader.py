@@ -13,5 +13,6 @@ db = MongoDB()
 chatbot = ChatBot(
     name=config.bot.name,
     storage_adapter=config.bot.storage_adapter,
-    logic_adapters=config.bot.logic_adapters
+    logic_adapters=config.bot.logic_adapters,
+    database_uri=db.url
 )
