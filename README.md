@@ -69,6 +69,10 @@ The question is sent to the admins, and when they receive the answer, they add i
 you can find more results from chatbot in <a href='result' target="_blank">this directory</a> neural networks' configs
 of those results are described in the filename
 
+### Project Framework
+
+![](assets/project-framework.png)
+
 # Authors
 
 * [@YoshlikMedia](https://github.com/yoshlikmedia)
