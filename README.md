@@ -70,6 +70,9 @@ you can find more results from chatbot in <a href='result' target="_blank">this 
 of those results are described in the filename
 
 ### Project Framework
+Framework divides into tow main parts:
+* User Simulator
+* End-to-End Neural Dialogue system
 
 ![](assets/project-framework.png)
 
