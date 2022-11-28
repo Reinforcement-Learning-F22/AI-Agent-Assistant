@@ -79,4 +79,4 @@ Framework divides into tow main parts:
 # Authors
 
 * [@YoshlikMedia](https://github.com/yoshlikmedia)
-* [@ParthKalkar](https://github.com/Odilbek99) 
+* [@Odilbek](https://github.com/Odilbek99) 
