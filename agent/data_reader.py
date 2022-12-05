@@ -1,17 +1,17 @@
 # coding=utf-8
 
-from __future__ import print_function
-import cPickle as pickle
+import pickle
 import config
 import random
 
-class Data_Reader:
+
+class DataReader:
     def __init__(self, cur_train_index=0, load_list=False):
         self.training_data = pickle.load(open(config.training_data_path, 'rb'))
         self.data_size = len(self.training_data)
         if load_list:
             self.shuffle_list = pickle.load(open(config.index_list_file, 'rb'))
-        else:    
+        else:
             self.shuffle_list = self.shuffle_index()
         self.train_index = cur_train_index
 
@@ -31,28 +31,28 @@ class Data_Reader:
             batch_index += self.shuffle_list[:remain_size]
             self.train_index = remain_size
         else:
-            batch_index = self.shuffle_list[self.train_index:self.train_index+batch_size]
+            batch_index = self.shuffle_list[self.train_index:self.train_index + batch_size]
             self.train_index += batch_size
 
         return batch_index
 
     def generate_training_batch(self, batch_size):
         batch_index = self.generate_batch_index(batch_size)
-        batch_X = [self.training_data[i][0] for i in batch_index]   # batch_size of conv_a
-        batch_Y = [self.training_data[i][1] for i in batch_index]   # batch_size of conv_b
+        batch_X = [self.training_data[i][0] for i in batch_index]  # batch_size of conv_a
+        batch_Y = [self.training_data[i][1] for i in batch_index]  # batch_size of conv_b
 
         return batch_X, batch_Y
 
     def generate_training_batch_with_former(self, batch_size):
         batch_index = self.generate_batch_index(batch_size)
-        batch_X = [self.training_data[i][0] for i in batch_index]   # batch_size of conv_a
-        batch_Y = [self.training_data[i][1] for i in batch_index]   # batch_size of conv_b
-        former = [self.training_data[i][2] for i in batch_index]    # batch_size of former utterance
+        batch_X = [self.training_data[i][0] for i in batch_index]  # batch_size of conv_a
+        batch_Y = [self.training_data[i][1] for i in batch_index]  # batch_size of conv_b
+        former = [self.training_data[i][2] for i in batch_index]  # batch_size of former utterance
 
         return batch_X, batch_Y, former
 
     def generate_testing_batch(self, batch_size):
         batch_index = self.generate_batch_index(batch_size)
-        batch_X = [self.training_data[i][0] for i in batch_index]   # batch_size of conv_a
+        batch_X = [self.training_data[i][0] for i in batch_index]  # batch_size of conv_a
 
         return batch_X

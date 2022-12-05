@@ -8,7 +8,7 @@ import copy
 
 sys.path.append("agent")
 from model import Seq2Seq_chatbot
-from data_reader import Data_Reader
+from data_reader import DataReader
 import data_parser
 import config
 import re
@@ -333,7 +333,7 @@ def train():
         saver2.restore(sess2, os.path.join(reversed_model_path, reversed_model_name))
         print("Reversed model {} restored.".format(reversed_model_name))
 
-    dr = Data_Reader(cur_train_index=config.cur_train_index, load_list=config.load_list)
+    dr = DataReader(cur_train_index=config.cur_train_index, load_list=config.load_list)
 
     for epoch in range(start_epoch, epochs):
         n_batch = dr.get_batch_num(batch_size)

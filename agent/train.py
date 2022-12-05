@@ -1,9 +1,9 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 from __future__ import print_function
 
 from gensim.models import KeyedVectors
-from data_reader import Data_Reader
+from data_reader import DataReader
 import data_parser
 import config
 
@@ -13,7 +13,6 @@ import numpy as np
 
 import os
 import time
-
 
 ### Global Parameters ###
 checkpoint = config.CHECKPOINT
@@ -82,26 +81,27 @@ def pad_sequences(sequences, maxlen=None, dtype='int32', padding='pre', truncati
             raise ValueError('Padding type "%s" not understood' % padding)
     return x
 
+
 def train():
     wordtoix, ixtoword, bias_init_vector = data_parser.preProBuildWordVocab(word_count_threshold=word_count_threshold)
     word_vector = KeyedVectors.load_word2vec_format('model/word_vector.bin', binary=True)
 
     model = Seq2Seq_chatbot(
-            dim_wordvec=dim_wordvec,
-            n_words=len(wordtoix),
-            dim_hidden=dim_hidden,
-            batch_size=batch_size,
-            n_encode_lstm_step=n_encode_lstm_step,
-            n_decode_lstm_step=n_decode_lstm_step,
-            bias_init_vector=bias_init_vector,
-            lr=learning_rate)
+        dim_wordvec=dim_wordvec,
+        n_words=len(wordtoix),
+        dim_hidden=dim_hidden,
+        batch_size=batch_size,
+        n_encode_lstm_step=n_encode_lstm_step,
+        n_decode_lstm_step=n_decode_lstm_step,
+        bias_init_vector=bias_init_vector,
+        lr=learning_rate)
 
     train_op, tf_loss, word_vectors, tf_caption, tf_caption_mask, inter_value = model.build_model()
 
     saver = tf.train.Saver(max_to_keep=100)
 
     sess = tf.InteractiveSession()
-    
+
     if checkpoint:
         print("Use Model {}.".format(model_name))
         saver.restore(sess, os.path.join(model_path, model_name))
@@ -110,7 +110,7 @@ def train():
         print("Restart training...")
         tf.global_variables_initializer().run()
 
-    dr = Data_Reader()
+    dr = DataReader()
 
     for epoch in range(start_epoch, epochs):
         n_batch = dr.get_batch_num(batch_size)
@@ -147,7 +147,7 @@ def train():
                     current_captions[idx] = current_captions[idx] + ' <eos>'
                 else:
                     new_word = ''
-                    for i in range(n_decode_lstm_step-1):
+                    for i in range(n_decode_lstm_step - 1):
                         new_word = new_word + word[i] + ' '
                     current_captions[idx] = new_word + '<eos>'
 
@@ -162,7 +162,8 @@ def train():
                 current_caption_ind.append(current_word_ind)
 
             current_caption_matrix = pad_sequences(current_caption_ind, padding='post', maxlen=n_decode_lstm_step)
-            current_caption_matrix = np.hstack([current_caption_matrix, np.zeros([len(current_caption_matrix), 1])]).astype(int)
+            current_caption_matrix = np.hstack(
+                [current_caption_matrix, np.zeros([len(current_caption_matrix), 1])]).astype(int)
             current_caption_masks = np.zeros((current_caption_matrix.shape[0], current_caption_matrix.shape[1]))
             nonzeros = np.array(map(lambda x: (x != 0).sum() + 1, current_caption_matrix))
 
@@ -171,24 +172,25 @@ def train():
 
             if batch % 100 == 0:
                 _, loss_val = sess.run(
-                        [train_op, tf_loss],
-                        feed_dict={
-                            word_vectors: current_feats,
-                            tf_caption: current_caption_matrix,
-                            tf_caption_mask: current_caption_masks
-                        })
-                print("Epoch: {}, batch: {}, loss: {}, Elapsed time: {}".format(epoch, batch, loss_val, time.time() - start_time))
+                    [train_op, tf_loss],
+                    feed_dict={
+                        word_vectors: current_feats,
+                        tf_caption: current_caption_matrix,
+                        tf_caption_mask: current_caption_masks
+                    })
+                print("Epoch: {}, batch: {}, loss: {}, Elapsed time: {}".format(epoch, batch, loss_val,
+                                                                                time.time() - start_time))
             else:
                 _ = sess.run(train_op,
                              feed_dict={
-                                word_vectors: current_feats,
-                                tf_caption: current_caption_matrix,
-                                tf_caption_mask: current_caption_masks
-                            })
-
+                                 word_vectors: current_feats,
+                                 tf_caption: current_caption_matrix,
+                                 tf_caption_mask: current_caption_masks
+                             })
 
         print("Epoch ", epoch, " is done. Saving the model ...")
         saver.save(sess, os.path.join(model_path, 'model'), global_step=epoch)
+
 
 if __name__ == "__main__":
     train()

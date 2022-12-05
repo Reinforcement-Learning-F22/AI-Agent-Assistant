@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 from __future__ import print_function
 
@@ -15,33 +15,36 @@ import os
 import sys
 import time
 
-#=====================================================
+# =====================================================
 # Global Parameters
-#=====================================================
+# =====================================================
 default_model_path = './model/Seq2Seq/model-77'
 testing_data_path = 'sample_input.txt' if len(sys.argv) <= 2 else sys.argv[2]
 output_path = 'sample_output_S2S.txt' if len(sys.argv) <= 3 else sys.argv[3]
 
 word_count_threshold = config.WC_threshold
 
-#=====================================================
+# =====================================================
 # Train Parameters
-#=====================================================
+# =====================================================
 dim_wordvec = 300
 dim_hidden = 1000
 
-n_encode_lstm_step = 22 + 1 # one random normal as the first timestep
+n_encode_lstm_step = 22 + 1  # one random normal as the first timestep
 n_decode_lstm_step = 22
 
 batch_size = 1
 
 """ Extract only the vocabulary part of the data """
+
+
 def refine(data):
     words = re.findall("[a-zA-Z'-]+", data)
     words = ["".join(word.split("'")) for word in words]
     # words = ["".join(word.split("-")) for word in words]
     data = ' '.join(words)
     return data
+
 
 def test(model_path=default_model_path):
     testing_data = open(testing_data_path, 'r').read().split('\n')
@@ -51,13 +54,13 @@ def test(model_path=default_model_path):
     _, ixtoword, bias_init_vector = data_parser.preProBuildWordVocab(word_count_threshold=word_count_threshold)
 
     model = Seq2Seq_chatbot(
-            dim_wordvec=dim_wordvec,
-            n_words=len(ixtoword),
-            dim_hidden=dim_hidden,
-            batch_size=batch_size,
-            n_encode_lstm_step=n_encode_lstm_step,
-            n_decode_lstm_step=n_decode_lstm_step,
-            bias_init_vector=bias_init_vector)
+        dim_wordvec=dim_wordvec,
+        n_words=len(ixtoword),
+        dim_hidden=dim_hidden,
+        batch_size=batch_size,
+        n_encode_lstm_step=n_encode_lstm_step,
+        n_decode_lstm_step=n_decode_lstm_step,
+        bias_init_vector=bias_init_vector)
 
     word_vectors, caption_tf, probs, _ = model.build_generator()
 
@@ -79,7 +82,7 @@ def test(model_path=default_model_path):
 
             question = [refine(w) for w in question.lower().split()]
             question = [word_vector[w] if w in word_vector else np.zeros(dim_wordvec) for w in question]
-            question.insert(0, np.random.normal(size=(dim_wordvec,))) # insert random normal at the first step
+            question.insert(0, np.random.normal(size=(dim_wordvec,)))  # insert random normal at the first step
 
             if len(question) > n_encode_lstm_step:
                 question = question[:n_encode_lstm_step]
@@ -87,10 +90,10 @@ def test(model_path=default_model_path):
                 for _ in range(len(question), n_encode_lstm_step):
                     question.append(np.zeros(dim_wordvec))
 
-            question = np.array([question]) # 1x22x300
-    
+            question = np.array([question])  # 1x22x300
+
             generated_word_index, prob_logit = sess.run([caption_tf, probs], feed_dict={word_vectors: question})
-            
+
             # remove <unk> to second high prob. word
             for i in range(len(generated_word_index)):
                 if generated_word_index[i] == 3:

@@ -3,8 +3,10 @@
 import tensorflow as tf
 import numpy as np
 
+
 class Seq2Seq_chatbot():
-    def __init__(self, dim_wordvec, n_words, dim_hidden, batch_size, n_encode_lstm_step, n_decode_lstm_step, bias_init_vector=None, lr=0.0001):
+    def __init__(self, dim_wordvec, n_words, dim_hidden, batch_size, n_encode_lstm_step, n_decode_lstm_step,
+                 bias_init_vector=None, lr=0.0001):
         self.dim_wordvec = dim_wordvec
         self.dim_hidden = dim_hidden
         self.batch_size = batch_size
@@ -19,7 +21,8 @@ class Seq2Seq_chatbot():
         self.lstm1 = tf.contrib.rnn.BasicLSTMCell(dim_hidden, state_is_tuple=False)
         self.lstm2 = tf.contrib.rnn.BasicLSTMCell(dim_hidden, state_is_tuple=False)
 
-        self.encode_vector_W = tf.Variable(tf.random_uniform([dim_wordvec, dim_hidden], -0.1, 0.1), name='encode_vector_W')
+        self.encode_vector_W = tf.Variable(tf.random_uniform([dim_wordvec, dim_hidden], -0.1, 0.1),
+                                           name='encode_vector_W')
         self.encode_vector_b = tf.Variable(tf.zeros([dim_hidden]), name='encode_vector_b')
 
         self.embed_word_W = tf.Variable(tf.random_uniform([dim_hidden, n_words], -0.1, 0.1), name='embed_word_W')
@@ -31,11 +34,12 @@ class Seq2Seq_chatbot():
     def build_model(self):
         word_vectors = tf.placeholder(tf.float32, [self.batch_size, self.n_encode_lstm_step, self.dim_wordvec])
 
-        caption = tf.placeholder(tf.int32, [self.batch_size, self.n_decode_lstm_step+1])
-        caption_mask = tf.placeholder(tf.float32, [self.batch_size, self.n_decode_lstm_step+1])
+        caption = tf.placeholder(tf.int32, [self.batch_size, self.n_decode_lstm_step + 1])
+        caption_mask = tf.placeholder(tf.float32, [self.batch_size, self.n_decode_lstm_step + 1])
 
         word_vectors_flat = tf.reshape(word_vectors, [-1, self.dim_wordvec])
-        wordvec_emb = tf.nn.xw_plus_b(word_vectors_flat, self.encode_vector_W, self.encode_vector_b ) # (batch_size*n_encode_lstm_step, dim_hidden)
+        wordvec_emb = tf.nn.xw_plus_b(word_vectors_flat, self.encode_vector_W,
+                                      self.encode_vector_b)  # (batch_size*n_encode_lstm_step, dim_hidden)
         wordvec_emb = tf.reshape(wordvec_emb, [self.batch_size, self.n_encode_lstm_step, self.dim_hidden])
 
         state1 = tf.zeros([self.batch_size, self.lstm1.state_size])
@@ -70,7 +74,7 @@ class Seq2Seq_chatbot():
             with tf.variable_scope("LSTM2"):
                 output2, state2 = self.lstm2(tf.concat([current_embed, output1], 1), state2)
 
-            labels = tf.expand_dims(caption[:, i+1], 1)
+            labels = tf.expand_dims(caption[:, i + 1], 1)
             indices = tf.expand_dims(tf.range(0, self.batch_size, 1), 1)
             concated = tf.concat([indices, labels], 1)
             onehot_labels = tf.sparse_to_dense(concated, tf.stack([self.batch_size, self.n_words]), 1.0, 0.0)
@@ -81,7 +85,7 @@ class Seq2Seq_chatbot():
             entropies.append(cross_entropy)
             probs.append(logit_words)
 
-            current_loss = tf.reduce_sum(cross_entropy)/self.batch_size
+            current_loss = tf.reduce_sum(cross_entropy) / self.batch_size
             loss = loss + current_loss
 
         with tf.variable_scope(tf.get_variable_scope(), reuse=False):

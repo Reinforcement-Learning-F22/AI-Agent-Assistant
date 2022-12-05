@@ -1,9 +1,7 @@
 from loader import bot
 
 from keyboards.inline import *
-from loader import dp, chatbot, config, db
-
-from chatterbot.conversation import Statement
+from loader import dp, chatbot, db
 
 
 @dp.message_handler(state=None, content_types=types.ContentTypes.TEXT)
@@ -25,4 +23,5 @@ async def action_cmd(call: types.CallbackQuery, callback_data: dict):
                      f"<i>Awaiting an answer from the administrator👇</i>"
         await bot.send_message(chat_id=-815597083, text=admin_text)
         await bot.send_message(chat_id=-815597083, text=user_message.get('message_text'))
-    await call.message.edit_text(text=text, reply_markup=None)
+    await call.message.edit_reply_markup()
+    await call.message.reply(text=text, reply_markup=None)
